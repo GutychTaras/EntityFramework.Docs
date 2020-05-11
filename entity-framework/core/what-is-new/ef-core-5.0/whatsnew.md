@@ -2,7 +2,7 @@
 title: What's New in EF Core 5.0
 description: Overview of new features in EF Core 5.0
 author: ajcvickers
-ms.date: 03/30/2020
+ms.date: 05/11/2020
 uid: core/what-is-new/ef-core-5.0/whatsnew.md
 ---
 
@@ -15,6 +15,55 @@ This page does not duplicate the [plan for EF Core 5.0](plan.md).
 The plan describes the overall themes for EF Core 5.0, including everything we are planning to include before shipping the final release.
 
 We will add links from here to the official documentation as it is published.
+
+## Preview 4
+
+### Configure database precision/scale in model
+
+Precision and scale for a property can now be specified using the model builder.
+For example:
+
+```CSharp
+modelBuilder
+    .Entity<Blog>()
+    .Property(b => b.Numeric)
+    .HasPrecision(16, 4);
+```
+
+Precision and scale can still be set via the full database type, such as "decimal(16,4)". 
+
+Documentation is tracked by issue [#527](https://github.com/dotnet/EntityFramework.Docs/issues/527).
+
+### Specify SQL Server index fill factor
+
+The fill factor can no be specified when creating an index on SQL Server.
+For example:
+
+```CSharp
+modelBuilder
+    .Entity<Customer>()
+    .HasIndex(e => e.Name)
+    .HasFillFactor(90);
+```
+
+Documentation is tracked by issue [#2378](https://github.com/dotnet/EntityFramework.Docs/issues/2378).
+
+### More parameter overloads for CompileQuery
+
+Up to 15 generic parameters can now be specified for compiled queries.
+For example:
+
+```CSharp
+EF.CompileQuery(
+    (NorthwindContext context, string s1, string s2, string s3, string s4, string s5, string s6, string s7, string s8,
+        string s9, string s10, string s11, string s12, string s13, string s14, string s15)
+    => context.Set<Customer>()
+        .Count(c => c.CustomerID == s1 || c.CustomerID == s2 || c.CustomerID == s3 || c.CustomerID == s4 || c.CustomerID == s5
+            || c.CustomerID == s6 || c.CustomerID == s7 || c.CustomerID == s8 || c.CustomerID == s9 || c.CustomerID == s10
+            || c.CustomerID == s11 || c.CustomerID == s12 || c.CustomerID == s13 || c.CustomerID == s14 || c.CustomerID == s15));
+```
+
+Note that `EF.CompileQuery` is rarely needed since EF Core compiles queries automatically on first use.
 
 ## Preview 3
 
